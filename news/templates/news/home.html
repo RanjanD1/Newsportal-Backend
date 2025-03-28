@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News Portal | Home</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; }
+        .article { border-bottom: 1px solid #ddd; padding: 10px 0; }
+        .article:last-child { border-bottom: none; }
+        .category { font-size: 0.9em; color: #888; }
+        .date { font-size: 0.8em; color: #aaa; }
+        a { text-decoration: none; color: #2980b9; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📰 News Portal</h1>
+        <p>Welcome to the news portal! Here are the latest articles:</p>
+        
+        {% for article in articles %}
+            <div class="article">
+                <h2><a href="#">{{ article.title }}</a></h2>
+                <p class="category">Category: {{ article.category.name }}</p>
+                <p class="date">Published on {{ article.published_date|date:"M d, Y H:i" }}</p>
+                <p>{{ article.content|truncatechars:100 }}</p>
+            </div>
+        {% empty %}
+            <p>No articles found.</p>
+        {% endfor %}
+
+        <h3>📚 Categories</h3>
+        <ul>
+            {% for category in categories %}
+                <li>{{ category.name }}</li>
+            {% empty %}
+                <li>No categories available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
