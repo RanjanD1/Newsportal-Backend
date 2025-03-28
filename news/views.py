@@ -1,5 +1,6 @@
 from .models import recommend_articles
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login as auth_login
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import Article, Category, Comment, User, news_classifier
@@ -39,5 +40,34 @@ class NewsRecommendationView(generics.GenericAPIView):
         serializer = ArticleSerializer(recommended_articles, many=True)
         return Response(serializer.data)
     
+#Added for Login and SignUp Template Viewa
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user:
+            auth_login(request, user)
+            return redirect('/')
+        else:
+            return render(request, 'news/login.html', {'error': 'Invalid credentials'})
+    return render(request, 'news/login.html')
+
+def signup_view(request):
+    if request.method == "POST":
+        user = User.objects.create_user(
+            username=request.POST['email'],
+            email=request.POST['email'],
+            first_name=request.POST['first_name'],
+            last_name=request.POST['last_name'],
+            password=request.POST['password'],
+            role=request.POST['role']
+        )
+        auth_login(request, user)
+        return redirect('/')
+    return render(request, 'news/signup.html')
+
+# --- Added Home View ---
 def home_view(request):
-    return render(request, 'index.html')
+    articles = Article.objects.all().order_by('-published_date')[:10]
+    return render(request, 'news/home.html', {'articles': articles})
